@@ -158,8 +158,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findOneAndUpdate(req.user._id, {
-        $set: {
-            refreshToken: undefined
+        $unset: {
+            refreshToken: 1
         },
         new: true
     })
@@ -246,10 +246,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { fullname, email, username } = req.body
+    // console.log("FULLNAME , EMAIL , USERNAME" ,fullname, email, username);
     if (!(fullname || email || username)) {
         throw new ApiError(400, "Fields are required")
     }
-    const user = User.findByIdAndUpdate(
+    const user =  await User.findByIdAndUpdate(
         req.user?._id, {
         $set: {
             fullname: fullname,
